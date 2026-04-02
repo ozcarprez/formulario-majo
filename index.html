@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserva tu Mesa - Demo Restaurante</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0a0a0a;
+    color: #e8e4df;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: #d4af37;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    color: #888;
+    font-size: 15px;
+  }
+
+  .form-card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 28px 24px;
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #aaa;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 14px 16px;
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: #d4af37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  }
+
+  input::placeholder {
+    color: #444;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .btn-whatsapp {
+    width: 100%;
+    padding: 16px;
+    background: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }
+
+  .btn-whatsapp:hover {
+    background: #1fb855;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.25);
+  }
+
+  .btn-whatsapp:active {
+    transform: translateY(0);
+  }
+
+  .btn-whatsapp svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  .error {
+    border-color: #e74c3c !important;
+  }
+
+  .error-msg {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .error-msg.show {
+    display: block;
+  }
+
+  .info {
+    text-align: center;
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px dashed rgba(212, 175, 55, 0.2);
+    border-radius: 10px;
+  }
+
+  .info p {
+    color: #888;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .info code {
+    color: #d4af37;
+    background: rgba(212, 175, 55, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  /* Success state */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .success-overlay.show {
+    display: flex;
+  }
+
+  .success-box {
+    background: #141414;
+    border: 1px solid #25D366;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    max-width: 340px;
+    margin: 20px;
+  }
+
+  .success-box .checkmark {
+    width: 56px;
+    height: 56px;
+    background: rgba(37, 211, 102, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+  }
+
+  .success-box h3 {
+    color: #fff;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .success-box p {
+    color: #888;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="badge">Reservaciones</div>
+    <h1>Reserva tu Mesa</h1>
+    <p class="subtitle">Completa el formulario y te confirmamos por WhatsApp</p>
+  </div>
+
+  <div class="form-card">
+    <div class="field">
+      <label>Tu nombre</label>
+      <input type="text" id="nombre" placeholder="Ej: Juan Pérez">
+      <div class="error-msg" id="err-nombre">Escribe tu nombre</div>
+    </div>
+
+    <div class="field">
+      <label>Teléfono</label>
+      <input type="tel" id="telefono" placeholder="Ej: 664 123 4567">
+      <div class="error-msg" id="err-telefono">Escribe tu teléfono</div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Fecha</label>
+        <input type="date" id="fecha">
+        <div class="error-msg" id="err-fecha">Escoge una fecha</div>
+      </div>
+      <div class="field">
+        <label>Hora</label>
+        <select id="hora">
+          <option value="">Selecciona</option>
+          <option value="13:00">1:00 PM</option>
+          <option value="13:30">1:30 PM</option>
+          <option value="14:00">2:00 PM</option>
+          <option value="14:30">2:30 PM</option>
+          <option value="15:00">3:00 PM</option>
+          <option value="18:00">6:00 PM</option>
+          <option value="18:30">6:30 PM</option>
+          <option value="19:00">7:00 PM</option>
+          <option value="19:30">7:30 PM</option>
+          <option value="20:00">8:00 PM</option>
+          <option value="20:30">8:30 PM</option>
+          <option value="21:00">9:00 PM</option>
+        </select>
+        <div class="error-msg" id="err-hora">Escoge la hora</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Personas</label>
+      <select id="personas">
+        <option value="">¿Cuántos serán?</option>
+        <option value="1">1 persona</option>
+        <option value="2">2 personas</option>
+        <option value="3">3 personas</option>
+        <option value="4">4 personas</option>
+        <option value="5">5 personas</option>
+        <option value="6">6 personas</option>
+        <option value="7">7 personas</option>
+        <option value="8">8+ personas</option>
+      </select>
+      <div class="error-msg" id="err-personas">Indica cuántas personas</div>
+    </div>
+
+    <div class="field">
+      <label>Comentarios <span style="color:#555">(opcional)</span></label>
+      <input type="text" id="comentarios" placeholder="Cumpleaños, alergias, mesa especial...">
+    </div>
+
+    <button class="btn-whatsapp" onclick="enviarWhatsApp()">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Enviar por WhatsApp
+    </button>
+  </div>
+
+  <div class="info">
+    <p>
+      <strong>Oscar — así funciona:</strong><br><br>
+      Cambia el número <code>5216631261241</code> en el código por el número del restaurante.
+      El formato es: 52 (México) + número a 10 dígitos sin espacios.<br><br>
+      Cuando el cliente da clic, se abre WhatsApp con el mensaje armado automáticamente.
+      El dueño solo tiene que contestar.
+    </p>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="checkmark">✓</div>
+    <h3>¡Listo!</h3>
+    <p>Se abrió WhatsApp con tu reservación. El restaurante te confirmará en unos minutos.</p>
+  </div>
+</div>
+
+<script>
+  // Poner la fecha de hoy como mínimo
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('fecha').setAttribute('min', hoy);
+
+  function enviarWhatsApp() {
+    // 1. Agarrar los valores del formulario
+    const nombre = document.getElementById('nombre').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const fecha = document.getElementById('fecha').value;
+    const hora = document.getElementById('hora').value;
+    const personas = document.getElementById('personas').value;
+    const comentarios = document.getElementById('comentarios').value.trim();
+
+    // 2. Validar que no estén vacíos
+    let hayError = false;
+
+    // Limpiar errores anteriores
+    document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+    document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+
+    if (!nombre) {
+      document.getElementById('nombre').classList.add('error');
+      document.getElementById('err-nombre').classList.add('show');
+      hayError = true;
+    }
+    if (!telefono) {
+      document.getElementById('telefono').classList.add('error');
+      document.getElementById('err-telefono').classList.add('show');
+      hayError = true;
+    }
+    if (!fecha) {
+      document.getElementById('fecha').classList.add('error');
+      document.getElementById('err-fecha').classList.add('show');
+      hayError = true;
+    }
+    if (!hora) {
+      document.getElementById('hora').classList.add('error');
+      document.getElementById('err-hora').classList.add('show');
+      hayError = true;
+    }
+    if (!personas) {
+      document.getElementById('personas').classList.add('error');
+      document.getElementById('err-personas').classList.add('show');
+      hayError = true;
+    }
+
+    if (hayError) return; // Si hay error, no continuar
+
+    // 3. Formatear la fecha bonita
+    const fechaObj = new Date(fecha + 'T12:00:00');
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const fechaBonita = fechaObj.toLocaleDateString('es-MX', opciones);
+
+    // 4. Armar el mensaje
+    let mensaje = `🍽️ *Nueva Reservación*\n\n`;
+    mensaje += `👤 *Nombre:* ${nombre}\n`;
+    mensaje += `📱 *Teléfono:* ${telefono}\n`;
+    mensaje += `📅 *Fecha:* ${fechaBonita}\n`;
+    mensaje += `🕐 *Hora:* ${hora}\n`;
+    mensaje += `👥 *Personas:* ${personas}\n`;
+
+    if (comentarios) {
+      mensaje += `💬 *Comentarios:* ${comentarios}\n`;
+    }
+
+    mensaje += `\n¡Gracias! Quedo en espera de confirmación.`;
+
+    // 5. Crear el link de WhatsApp
+    // ⚠️ CAMBIAR ESTE NÚMERO por el del restaurante real
+    const numeroRestaurante = '5216631261241';
+    const url = `https://wa.me/${numeroRestaurante}?text=${encodeURIComponent(mensaje)}`;
+
+    // 6. Abrir WhatsApp
+    window.open(url, '_blank');
+
+    // 7. Mostrar confirmación
+    document.getElementById('successOverlay').classList.add('show');
+    setTimeout(() => {
+      document.getElementById('successOverlay').classList.remove('show');
+    }, 3000);
+  }
+</script>
+
+</body>
+</html>
